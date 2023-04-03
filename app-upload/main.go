@@ -80,7 +80,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out := fmt.Sprintf("Uploaded to: %s, renamed to: %s\n", file.OriginalFile, file.NewFileName)
+	out := fmt.Sprintf("One file uploaded %s, renamed to: %s\n", file.OriginalFile, file.NewFileName)
 
 	_, _ = w.Write([]byte(out))
 }
