@@ -1,3 +1,3 @@
-module github.com/calvarado2004/go-modules/toolkit
+module toolkit
 
 go 1.20

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/calvarado2004/go-modules/toolkit"
+	"toolkit"
 )
 
 func main() {

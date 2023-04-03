@@ -1,3 +1,3 @@
-module github.com/calvarado2004/go-modules/app-upload
+module app-upload
 
 go 1.20
