@@ -30,7 +30,7 @@ func routes() http.Handler {
 
 	mux.HandleFunc("/upload", uploadFiles)
 
-	mux.HandleFunc("/upload-single/", uploadFile)
+	mux.HandleFunc("/upload-one", uploadFile)
 
 	return mux
 }
