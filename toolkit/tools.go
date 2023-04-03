@@ -3,8 +3,8 @@ package toolkit
 import (
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -40,12 +40,28 @@ type UploadedFile struct {
 	FileSize     int64
 }
 
+// UploadOneFile uploads one file to the server
+func (t *Tools) UploadOneFile(r *http.Request, uploadDir string, rename ...bool) (*UploadedFile, error) {
+
+	renameFile := true
+	if len(rename) > 0 {
+		renameFile = rename[0]
+	}
+
+	files, err := t.UploadFiles(r, uploadDir, renameFile)
+	if err != nil {
+		return nil, err
+	}
+
+	return files[0], nil
+}
+
 // UploadFiles uploads files to the server and verifies that the file type is allowed
 func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) ([]*UploadedFile, error) {
-	renaneFile := true
+	renameFile := true
 
 	if len(rename) > 0 {
-		renaneFile = rename[0]
+		renameFile = rename[0]
 	}
 
 	var uploadedFiles []*UploadedFile
@@ -69,12 +85,7 @@ func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 					return nil, err
 				}
 
-				defer func(infile multipart.File) {
-					err := infile.Close()
-					if err != nil {
-						panic(err)
-					}
-				}(infile)
+				defer infile.Close()
 
 				buff := make([]byte, 512)
 
@@ -107,21 +118,16 @@ func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 					return nil, err
 				}
 
-				if renaneFile {
-					uploadedFile.NewFileName = t.RandomString(25) + filepath.Ext(hdr.Filename)
+				if renameFile {
+					uploadedFile.NewFileName = fmt.Sprintf("%s%s", t.RandomString(25), filepath.Ext(hdr.Filename))
 				} else {
 					uploadedFile.NewFileName = hdr.Filename
 				}
 
-				uploadedFile.NewFileName = hdr.Filename
+				uploadedFile.OriginalFile = hdr.Filename
 
 				var outfile *os.File
-				defer func(outfile *os.File) {
-					err := outfile.Close()
-					if err != nil {
-						panic(err)
-					}
-				}(outfile)
+				defer outfile.Close()
 
 				if outfile, err = os.Create(filepath.Join(uploadDir, uploadedFile.NewFileName)); err != nil {
 					return nil, err
