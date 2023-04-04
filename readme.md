@@ -16,4 +16,4 @@ The included tools are:
 
 ## Installation
 
-`go get -u github.com/calvarado2004/go-modules/toolbox`
+`go get -u github.com/calvarado2004/go-modules/toolkit`
