@@ -32,6 +32,8 @@ func TestTools_UploadFiles(t *testing.T) {
 	}{
 		{"allowed no rename", []string{"image/jpeg", "image/png"}, false, false},
 		{"allowed rename", []string{"image/jpeg", "image/png"}, true, false},
+		{"not allowed", []string{"image/png"}, false, true},
+		{"not allowed rename", []string{"image/png"}, true, true},
 	}
 
 	for _, tt := range uploadTests {
