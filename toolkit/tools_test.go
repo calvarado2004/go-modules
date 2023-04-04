@@ -105,6 +105,7 @@ func TestTools_UploadFiles(t *testing.T) {
 	}
 }
 
+// TestTools_UploadOneFile tests the UploadOneFile function
 func TestTools_UploadOneFile(t *testing.T) {
 	var uploadTests = []struct {
 		name          string
