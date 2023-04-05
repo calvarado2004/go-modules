@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -74,7 +75,7 @@ func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = r.ParseMultipartForm(t.MaxFileSize)
 	if err != nil {
 		return nil, errors.New("the uploaded file is too large")
@@ -171,4 +172,23 @@ func (t *Tools) CreateDirIfNotExist(path string) error {
 	}
 
 	return nil
+}
+
+// Slugify returns a slugified string
+func (t *Tools) Slugify(s string) (string, error) {
+
+	if s == "" {
+		return "", errors.New("string is empty")
+	}
+
+	var re = regexp.MustCompile("[^a-zA-Z0-9]+")
+
+	slug := strings.Trim(re.ReplaceAllString(strings.ToLower(s), "-"), "-")
+
+	if len(slug) == 0 {
+		return "", errors.New("slug is empty")
+	}
+
+	return slug, nil
+
 }
