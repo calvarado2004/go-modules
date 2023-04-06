@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -190,5 +191,15 @@ func (t *Tools) Slugify(s string) (string, error) {
 	}
 
 	return slug, nil
+
+}
+
+// DownloadStaticFile downloads a static file
+func (t *Tools) DownloadStaticFile(w http.ResponseWriter, r *http.Request, osPath, file, displayName string) {
+
+	filePath := path.Join(osPath, file)
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", displayName))
+
+	http.ServeFile(w, r, filePath)
 
 }
