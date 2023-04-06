@@ -208,6 +208,7 @@ func TestTools_Slugify(t *testing.T) {
 		{"valid string with numbers", "This is a test 123", "this-is-a-test-123", false},
 		{"valid string with special characters", "This is a test 123 !@#$%^&*()_+{}|:<>?[]\\;',./", "this-is-a-test-123", false},
 		{"empty string", " ", "this-is-a-test-123", true},
+		{"japanese strings", "こんにちは世界", "kon-nichi-ha-se-kai", true},
 	}
 
 	for _, tt := range slugTests {
