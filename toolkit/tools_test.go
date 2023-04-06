@@ -275,7 +275,14 @@ func TestTools_ReadJSON(t *testing.T) {
 	}{
 		{"valid json", `{"name": "John", "age": 30}`, false, 4096, false},
 		{"invalid json", `{"name": "John", "age": 30`, true, 4096, false},
+		{"json with unknown fields", `{"name": "John", "age": 30, "city": "New York"}`, true, 4096, false},
+		{"json with unknown fields allowed", `{"name": "John", "age": 30, "city": "New York"}`, false, 4096, true},
+		{"json with max size", `{"name": "John", "age": 30}`, true, 10, false},
+		{"json with incorrect type", `{"name": "John", "age": "30"}`, true, 4096, false},
+		{"json with two json objects", `{"name": "John", "age": 30}{"name": "John", "age": 30}`, true, 4096, false},
+		{"empty json", ``, true, 4096, false},
 	}
+
 	var testTools Tools
 
 	for _, tt := range jsonTests {
