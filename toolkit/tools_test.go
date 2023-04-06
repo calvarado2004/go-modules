@@ -1,6 +1,7 @@
 package toolkit
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -261,4 +262,50 @@ func TestTools_DownloadStaticFile(t *testing.T) {
 		t.Errorf("Error reading response body: %v", err)
 	}
 
+}
+
+// TestTools_ReadJSON tests the ReadJSON function
+func TestTools_ReadJSON(t *testing.T) {
+	var jsonTests = []struct {
+		name          string
+		json          string
+		errorExpected bool
+		maxSize       int
+		allowUnknown  bool
+	}{
+		{"valid json", `{"name": "John", "age": 30}`, false, 4096, false},
+		{"invalid json", `{"name": "John", "age": 30`, true, 4096, false},
+	}
+	var testTools Tools
+
+	for _, tt := range jsonTests {
+
+		testTools.MaxJSONSize = tt.maxSize
+		testTools.AllowUnknownFields = tt.allowUnknown
+
+		var decodedJSON struct {
+			Name string `json:"name"`
+			Age  int    `json:"age"`
+		}
+
+		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(tt.json)))
+		if err != nil {
+			t.Log("Error:", err)
+		}
+
+		rr := httptest.NewRecorder()
+
+		err = testTools.ReadJSON(rr, req, &decodedJSON)
+
+		if tt.errorExpected && err == nil {
+			t.Errorf("%s: Error was expected but none received", tt.name)
+		}
+
+		if !tt.errorExpected && err != nil {
+			t.Errorf("%s: Error was not expected but received: %v", tt.name, err.Error())
+		}
+
+		req.Body.Close()
+
+	}
 }
