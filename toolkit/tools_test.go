@@ -319,3 +319,24 @@ func TestTools_ReadJSON(t *testing.T) {
 
 	}
 }
+
+// TestTools_WriteJSON tests the WriteJSON function
+func TestTools_WriteJSON(t *testing.T) {
+	var testTools Tools
+
+	rr := httptest.NewRecorder()
+	payload := JSONResponse{
+		Error: false,
+		Msg:   "test",
+	}
+
+	headers := make(http.Header)
+
+	headers.Add("Content-Type", "application/json")
+
+	err := testTools.WriteJSON(rr, http.StatusOK, payload, headers)
+	if err != nil {
+		t.Errorf("Error writing json: %v", err)
+	}
+
+}
