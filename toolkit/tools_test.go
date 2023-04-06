@@ -281,6 +281,9 @@ func TestTools_ReadJSON(t *testing.T) {
 		{"json with incorrect type", `{"name": "John", "age": "30"}`, true, 4096, false},
 		{"json with two json objects", `{"name": "John", "age": 30}{"name": "John", "age": 30}`, true, 4096, false},
 		{"empty json", ``, true, 4096, false},
+		{"json with missing fieldname", `{:jack, "age": 30}`, true, 4096, false},
+		{"json with missing fieldvalue", `{"name": "John", "age": }`, true, 4096, false},
+		{"not json", `not json`, true, 4096, false},
 	}
 
 	var testTools Tools
