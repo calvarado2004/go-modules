@@ -5,7 +5,9 @@ import (
 	"image"
 	"image/jpeg"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"sync"
@@ -227,4 +229,36 @@ func TestTools_Slugify(t *testing.T) {
 			t.Errorf("%s: Error was expected but none received", tt.name)
 		}
 	}
+}
+
+// TestTools_DownloadStaticFile tests the DownloadStaticFile function
+func TestTools_DownloadStaticFile(t *testing.T) {
+	rr := httptest.NewRecorder()
+	request, _ := http.NewRequest("GET", "/", nil)
+
+	var testTools Tools
+
+	testTools.DownloadStaticFile(rr, request, "./testdata", "nyc.jpeg", "nyc.jpeg")
+
+	res := rr.Result()
+
+	defer res.Body.Close()
+
+	if res.Header["Content-Length"][0] != "226989" {
+		t.Errorf("Wrong content length, expected %s", res.Header["Content-Length"][0])
+	}
+
+	if res.Header["Content-Type"][0] != "image/jpeg" {
+		t.Errorf("Wrong content type, expected %s", res.Header["Content-Type"][0])
+	}
+
+	if res.Header["Content-Disposition"][0] != "attachment; filename=\"nyc.jpeg\"" {
+		t.Errorf("Wrong content disposition, expected %s", res.Header["Content-Disposition"][0])
+	}
+
+	_, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("Error reading response body: %v", err)
+	}
+
 }

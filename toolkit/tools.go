@@ -198,7 +198,7 @@ func (t *Tools) Slugify(s string) (string, error) {
 func (t *Tools) DownloadStaticFile(w http.ResponseWriter, r *http.Request, osPath, file, displayName string) {
 
 	filePath := path.Join(osPath, file)
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", displayName))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", displayName))
 
 	http.ServeFile(w, r, filePath)
 
