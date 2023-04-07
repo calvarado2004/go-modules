@@ -26,6 +26,7 @@ func main() {
 
 	mux.HandleFunc("/receive-post", receivePost)
 	mux.HandleFunc("/remote-service", remoteService)
+	mux.HandleFunc("/simulated-service", simulatedService)
 
 	// print a message to the console
 	println("Listening on port 8081")
@@ -47,7 +48,7 @@ func receivePost(w http.ResponseWriter, r *http.Request) {
 	// decode the request body into the requestPayload struct
 	err := t.ReadJSON(w, r, &requestPayload)
 	if err != nil {
-		t.ErrorJSON(w, err)
+		_ = t.ErrorJSON(w, err)
 		return
 	}
 
@@ -57,12 +58,58 @@ func receivePost(w http.ResponseWriter, r *http.Request) {
 
 	err = t.WriteJSON(w, http.StatusAccepted, responsePayload)
 	if err != nil {
-		t.ErrorJSON(w, err)
+		_ = t.ErrorJSON(w, err)
 		return
 	}
 
 }
 
+// remoteService is a handler function that receives a POST request
 func remoteService(w http.ResponseWriter, r *http.Request) {
+	var requestPayload RequestPayload
+	var t toolkit.Tools
+
+	// decode the request body into the requestPayload struct
+	err := t.ReadJSON(w, r, &requestPayload)
+	if err != nil {
+		_ = t.ErrorJSON(w, err)
+		return
+	}
+
+	// call the simulated service
+	_, statusCode, err := t.PushJSONToRemote("http://localhost:8081/simulated-service", requestPayload)
+	if err != nil {
+		_ = t.ErrorJSON(w, err)
+		return
+	}
+
+	responsePayload := ResponsePayload{
+		Message:    "you hit the handler function",
+		StatusCode: statusCode,
+	}
+
+	err = t.WriteJSON(w, http.StatusAccepted, responsePayload)
+	if err != nil {
+		_ = t.ErrorJSON(w, err)
+		return
+	}
+
+}
+
+// simulatedService is a handler function that receives a POST request
+func simulatedService(w http.ResponseWriter, r *http.Request) {
+
+	var payload ResponsePayload
+
+	payload.Message = "simulated service"
+	payload.StatusCode = http.StatusAccepted
+
+	var t toolkit.Tools
+
+	err := t.WriteJSON(w, http.StatusAccepted, payload)
+	if err != nil {
+		_ = t.ErrorJSON(w, err)
+		return
+	}
 
 }
