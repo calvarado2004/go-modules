@@ -376,3 +376,48 @@ func TestTools_ErrorJSON(t *testing.T) {
 	}
 
 }
+
+// RoundTripFunc is a function that implements the RoundTripper interface.
+type RoundTripFunc func(req *http.Request) *http.Response
+
+// RoundTrip implements the RoundTripper interface.
+func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req), nil
+}
+
+// NewTestClient returns a new http.Client with the Transport replaced to avoid making real calls.
+func NewTestClient(fn RoundTripFunc) *http.Client {
+	return &http.Client{
+		Transport: fn,
+	}
+}
+
+// TestTools_PushJSONToRemote tests the PushJSONToRemote function
+func TestTools_PushJSONToRemote(t *testing.T) {
+	client := NewTestClient(func(req *http.Request) *http.Response {
+		// Test request parameters
+
+		// Return response
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			// Send response to be tested
+			Body: ioutil.NopCloser(bytes.NewBufferString(`{"test": "test"}`)),
+			// Must be set to non-nil value or it panics
+			Header: make(http.Header),
+		}
+	})
+
+	var testTools Tools
+
+	var foo struct {
+		Test string `json:"test"`
+	}
+
+	foo.Test = "test"
+
+	_, _, err := testTools.PushJSONToRemote("http://test.com", foo, client)
+	if err != nil {
+		t.Errorf("Error pushing json: %v to remote uri", err)
+	}
+
+}
