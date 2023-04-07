@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"toolkit"
 )
 
 type RequestPayload struct {
@@ -38,7 +39,27 @@ func main() {
 
 }
 
+// receivePost is a handler function that receives a POST request
 func receivePost(w http.ResponseWriter, r *http.Request) {
+	var requestPayload RequestPayload
+	var t toolkit.Tools
+
+	// decode the request body into the requestPayload struct
+	err := t.ReadJSON(w, r, &requestPayload)
+	if err != nil {
+		t.ErrorJSON(w, err)
+		return
+	}
+
+	responsePayload := ResponsePayload{
+		Message: "you hit the handler function",
+	}
+
+	err = t.WriteJSON(w, http.StatusAccepted, responsePayload)
+	if err != nil {
+		t.ErrorJSON(w, err)
+		return
+	}
 
 }
 
