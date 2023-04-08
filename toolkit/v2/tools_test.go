@@ -241,7 +241,7 @@ func TestTools_DownloadStaticFile(t *testing.T) {
 
 	var testTools Tools
 
-	testTools.DownloadStaticFile(rr, request, "./testdata", "nyc.jpeg", "nyc.jpeg")
+	testTools.DownloadStaticFile(rr, request, "./testdata", "nyc.jpeg")
 
 	res := rr.Result()
 
