@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	toolkit2 "toolkit"
+	"toolkit/v2"
 )
 
 func main() {
@@ -30,5 +32,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("logout"))
+
+	var tools toolkit.Tools
+
+	payload := toolkit2.JSONResponse{
+		Msg: "Logged out",
+	}
+
+	_ = tools.WriteJSON(w, http.StatusAccepted, payload)
 }
